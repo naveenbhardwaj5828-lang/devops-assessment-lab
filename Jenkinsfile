@@ -64,11 +64,15 @@ pipeline {
         stage('Health Check') {
             steps {
                 echo 'Checking application health'
-
-                sh '''
-                    curl --fail http://172.31.3.37/
-                '''
+                sh 'curl --fail http://172.31.3.37/'
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning temporary deployment files'
+            sh 'rm -f devops-demo-*.tar.gz || true'
         }
     }
 }

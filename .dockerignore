@@ -1,0 +1,7 @@
+.git
+.gitignore
+.gitattributes
+Jenkinsfile
+docker-compose.yml
+scripts/
+*.tar.gz
