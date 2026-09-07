@@ -6,6 +6,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -57,6 +58,16 @@ pipeline {
                         "
                     '''
                 }
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                echo 'Checking application health'
+
+                sh '''
+                    curl --fail http://172.31.3.37/
+                '''
             }
         }
     }
