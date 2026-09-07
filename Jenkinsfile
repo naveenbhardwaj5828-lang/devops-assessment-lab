@@ -35,5 +35,29 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to EC2') {
+            steps {
+                echo "Deploying ${env.IMAGE_NAME} to Web EC2"
+
+                sh '''
+                    docker save "$IMAGE_NAME" | gzip > "devops-demo-${APP_VERSION}.tar.gz"
+                '''
+
+                sshagent(credentials: ['web-server-ssh-key']) {
+                    sh '''
+                        scp "devops-demo-${APP_VERSION}.tar.gz" \
+                            scripts/deploy.sh \
+                            ubuntu@172.31.3.37:/tmp/
+
+                        ssh ubuntu@172.31.3.37 "
+                            gunzip -c /tmp/devops-demo-${APP_VERSION}.tar.gz | docker load &&
+                            chmod +x /tmp/deploy.sh &&
+                            /tmp/deploy.sh ${IMAGE_NAME}
+                        "
+                    '''
+                }
+            }
+        }
     }
 }
